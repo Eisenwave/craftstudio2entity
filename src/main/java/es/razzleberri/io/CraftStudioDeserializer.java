@@ -52,9 +52,8 @@ public class CraftStudioDeserializer implements TextDeserializer<CraftStudioMode
             block.addChild(child);
         }
         
-        if (json.has("vertexCoords")) {
+        if (json.has("vertexCoords"))
             System.err.println("WARNING: Cube \"" + name + "\" has stretch which must be ignored.");
-        }
         
         return block;
     }

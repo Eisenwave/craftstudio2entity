@@ -61,6 +61,7 @@ public final class CraftStudioToBedrockEntity {
         
         Vec3d rotation = Rotations.craftStudioRotationToEntityRotation(block.getRotation());
         
+        //System.err.println(name);
         BedrockEntityBone bone = new BedrockEntityBone(name, parentName, pivot, rotation);
         bone.addCube(blockToCube(block, parent));
         geometry.addBone(bone);
