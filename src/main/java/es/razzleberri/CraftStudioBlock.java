@@ -35,26 +35,32 @@ public class CraftStudioBlock {
         return Collections.unmodifiableList(children);
     }
     
+    @NotNull
     public String getName() {
         return name;
     }
     
+    @NotNull
     public Vec3d getPosition() {
         return position;
     }
     
+    @NotNull
     public Vec3d getOffsetFromPivot() {
         return offsetFromPivot;
     }
     
+    @NotNull
     public Vec3i getSize() {
         return size;
     }
     
+    @NotNull
     public Vec3d getRotation() {
         return rotation;
     }
     
+    @NotNull
     public Vec2i getTexOffset() {
         return texOffset;
     }

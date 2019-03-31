@@ -9,7 +9,8 @@ public final class CraftStudioToBedrockEntity {
     private final static Vec3d VISIBLE_BOUNDS_OFFSET = new Vec3d(0, 0, 0);
     private final static Vec2i TEXTURE_SIZE = new Vec2i(128, 128);
     
-    public static BedrockEntityModel convert(CraftStudioModel csModel) {
+    @NotNull
+    public static BedrockEntityModel convert(@NotNull CraftStudioModel csModel) {
         BedrockEntityModel result = new BedrockEntityModel();
         BedrockEntityGeometry geometry = new BedrockEntityGeometry(
             VISIBLE_BOUNDS,
