@@ -26,6 +26,18 @@ public class Vec3d {
         return z;
     }
     
+    public Vec3d withX(double x) {
+        return new Vec3d(x, y, z);
+    }
+    
+    public Vec3d withY(double y) {
+        return new Vec3d(x, y, z);
+    }
+    
+    public Vec3d withZ(double z) {
+        return new Vec3d(x, y, z);
+    }
+    
     public Vec3d plus(Vec3d v) {
         return new Vec3d(this.x + v.x, this.y + v.y, this.z + v.z);
     }

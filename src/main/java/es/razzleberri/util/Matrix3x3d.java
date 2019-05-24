@@ -5,7 +5,13 @@ import org.jetbrains.annotations.NotNull;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
+import static java.lang.Math.atan2;
+import static java.lang.Math.sin;
+import static java.lang.Math.cos;
+
 public class Matrix3x3d {
+    
+    //private final static double HALF_PI = Math.toRadians(90);
     
     /**
      * <p>
@@ -20,7 +26,7 @@ public class Matrix3x3d {
      */
     @NotNull
     public static Matrix3x3d fromRotX(double angle) {
-        double sin = Math.sin(angle), cos = Math.cos(angle);
+        double sin = sin(angle), cos = cos(angle);
         return new Matrix3x3d(
             1, 0, 0,
             0, cos, -sin,
@@ -40,7 +46,7 @@ public class Matrix3x3d {
      */
     @NotNull
     public static Matrix3x3d fromRotY(double angle) {
-        double sin = Math.sin(angle), cos = Math.cos(angle);
+        double sin = sin(angle), cos = cos(angle);
         return new Matrix3x3d(
             cos, 0, sin,
             0, 1, 0,
@@ -60,7 +66,7 @@ public class Matrix3x3d {
      */
     @NotNull
     public static Matrix3x3d fromRotZ(double angle) {
-        double sin = Math.sin(angle), cos = Math.cos(angle);
+        double sin = sin(angle), cos = cos(angle);
         return new Matrix3x3d(
             cos, -sin, 0,
             sin, cos, 0,
@@ -75,6 +81,16 @@ public class Matrix3x3d {
     
     public static Matrix3x3d fromEulerXYZ(Vec3d v) {
         return fromEulerXYZ(v.getX(), v.getY(), v.getZ());
+    }
+    
+    // X Z Y
+    
+    public static Matrix3x3d fromEulerXZY(double x, double y, double z) {
+        return fromRotX(x).times(fromRotZ(z)).times(fromRotY(y));
+    }
+    
+    public static Matrix3x3d fromEulerXZY(Vec3d v) {
+        return fromEulerXZY(v.getX(), v.getY(), v.getZ());
     }
     
     // Z X Y
@@ -95,6 +111,16 @@ public class Matrix3x3d {
     
     public static Matrix3x3d fromEulerYXZ(Vec3d v) {
         return fromEulerYXZ(v.getX(), v.getY(), v.getZ());
+    }
+    
+    // Y Z X
+    
+    public static Matrix3x3d fromEulerYZX(double x, double y, double z) {
+        return fromRotY(y).times(fromRotZ(z)).times(fromRotX(x));
+    }
+    
+    public static Matrix3x3d fromEulerYZX(Vec3d v) {
+        return fromEulerYZX(v.getX(), v.getY(), v.getZ());
     }
     
     // Z Y X
@@ -144,33 +170,139 @@ public class Matrix3x3d {
             - get(0, 1) * get(1, 0) * get(2, 2);
     }
     
-    public Vec3d getXYZEulerRotation() {
-        double x = Math.atan2(get(1, 2), get(2, 2));
-        double cosY = Math.hypot(get(0, 0), get(0, 1));
-        double y = Math.atan2(-get(0, 2), cosY);
-        double sinX = Math.sin(x);
-        double cosX = Math.cos(x);
-        double z = Math.atan2(sinX * get(2, 0) - cosX * get(1, 0), cosX * get(1, 1) - sinX * get(2, 1));
-        return new Vec3d(-x, -y, -z);
+    // XYZ
+    
+    private static double hypot(double x, double y) {
+        return Math.sqrt(x * x + y * y);
     }
     
-    public Vec3d getXYLZEulerRotation() {
-        double x = Math.atan2(-get(1, 2), get(2, 2));
-        double cosY = Math.hypot(get(0, 0), get(0, 1));
-        double y = Math.atan2(get(0, 2), cosY);
-        double sinX = Math.sin(x);
-        double cosX = Math.cos(x);
-        double z = Math.atan2(-cosX * get(1, 0) - sinX * get(2, 0), cosX * get(1, 1) + sinX * get(2, 1));
+    // X_l Y_l Z_l
+    public Vec3d getLXLYLZEulerRotation() {
+        double x = atan2(get(1, 2), get(2, 2));
+        double cosY = hypot(get(0, 0), get(0, 1));
+        double y = atan2(-get(0, 2), cosY);
+        double sinX = sin(x);
+        double cosX = cos(x);
+        double sinZ = sinX * get(2, 0) - cosX * get(1, 0);
+        double cosZ = cosX * get(1, 1) - sinX * get(2, 1);
+        double z = atan2(sinZ, cosZ);
         return new Vec3d(x, y, z);
     }
     
+    // X_r Y_r Z_r
+    @SuppressWarnings("Duplicates")
+    public Vec3d getXYZEulerRotation() {
+        double x = atan2(-get(1, 2), get(2, 2));
+        double cosY = hypot(get(0, 0), get(0, 1));
+        double y = atan2(get(0, 2), cosY);
+        double sinX = sin(x);
+        double cosX = cos(x);
+        double sinZ = sinX * get(2, 0) + cosX * get(1, 0);
+        double cosZ = sinX * get(2, 1) + cosX * get(1, 1);
+        double z = atan2(sinZ, cosZ);
+        return new Vec3d(x, y, z);
+    }
+    
+    // X_r Y_r Z_l
+    @SuppressWarnings("Duplicates")
+    public Vec3d getXYLZEulerRotation() {
+        double x = atan2(-get(1, 2), get(2, 2));
+        double cosY = hypot(get(0, 0), get(0, 1));
+        double y = atan2(get(0, 2), cosY);
+        double sinX = sin(x);
+        double cosX = cos(x);
+        double sinZ = -cosX * get(1, 0) - sinX * get(2, 0);
+        double cosZ = cosX * get(1, 1) + sinX * get(2, 1);
+        double z = atan2(sinZ, cosZ);
+        return new Vec3d(x, y, z);
+    }
+    
+    // XZY
+    
+    // X_r Z_r Y_r
+    public Vec3d getXZYEulerRotation() {
+        double x = atan2(get(2, 1), get(1, 1));
+        double cosZ = hypot(get(0, 0), get(0, 2));
+        double z = atan2(-get(0, 1), cosZ);
+        double sinX = sin(x);
+        double cosX = cos(x);
+        double sinY = sinX * get(1, 0) - cosX * get(2, 0);
+        double cosY = cosX * get(2, 2) - sinX * get(1, 2);
+        double y = atan2(sinY, cosY);
+        return new Vec3d(x, y, z);
+    }
+    
+    // YXZ
+    
+    // Y_r X_r Z_r
+    public Vec3d getYXZEulerRotation() {
+        double y = atan2(get(0, 2), get(2, 2));
+        double cosX = hypot(get(1, 0), get(1, 1));
+        double x = atan2(-get(1, 2), cosX);
+        double sinY = sin(y);
+        double cosY = cos(y);
+        double sinZ = sinY * get(2, 1) - cosY * get(0, 1);
+        double cosZ = cosY * get(0, 0) - sinY * get(2, 0);
+        double z = atan2(sinZ, cosZ);
+        return new Vec3d(x, y, z);
+    }
+    
+    // YZX
+    
+    public Vec3d getYZXEulerRotation() {
+        double y = atan2(-get(2, 0), get(0, 0));
+        double cosZ = hypot(get(1, 1), get(1, 2));
+        double z = atan2(get(1, 0), cosZ);
+        double sinY = sin(y);
+        double cosY = cos(y);
+        double sinX = sinY * get(0, 1) + cosY * get(2, 1);
+        double cosX = sinY * get(0, 2) + cosY * get(2, 2);
+        double x = atan2(sinX, cosX);
+        return new Vec3d(x, y, z);
+    }
+    
+    // ZYX
+    
+    // Z_l Y_r X_r
+    @SuppressWarnings("Duplicates")
     public Vec3d getLZYXEulerRotation() {
-        double z = Math.atan2(-get(1, 0), get(0, 0));
-        double cosY = Math.hypot(get(2, 1), get(2, 2));
-        double y = Math.atan2(-get(2, 0), cosY);
-        double sinZ = Math.sin(z);
-        double cosZ = Math.cos(z);
-        double x = Math.atan2(-sinZ * get(0, 2) - cosZ * get(1, 2), sinZ * get(0, 1) + cosZ * get(1, 1));
+        double z = atan2(-get(1, 0), get(0, 0));
+        double cosY = hypot(get(2, 1), get(2, 2));
+        double y = atan2(-get(2, 0), cosY);
+        double sinZ = sin(z);
+        double cosZ = cos(z);
+        double sinX = -sinZ * get(0, 2) - cosZ * get(1, 2);
+        double cosX = sinZ * get(0, 1) + cosZ * get(1, 1);
+        double x = atan2(sinX, cosX);
+        return new Vec3d(x, y, z);
+    }
+    
+    // Z_r Y_r X_r
+    @SuppressWarnings("Duplicates")
+    public Vec3d getZYXEulerRotation() {
+        double z = atan2(get(1, 0), get(0, 0));
+        double cosY = hypot(get(2, 1), get(2, 2));
+        double y = atan2(-get(2, 0), cosY);
+        double sinZ = sin(z);
+        double cosZ = cos(z);
+        double sinX = sinZ * get(0, 2) - cosZ * get(1, 2);
+        double cosX = cosZ * get(1, 1) - sinZ * get(0, 1);
+        double x = atan2(sinX, cosX);
+        return new Vec3d(x, y, z);
+    }
+    
+    // ZXY
+    
+    // Z_r Y_r X_r
+    public Vec3d getZXYEulerRotation() {
+        double z = atan2(-get(0, 1), get(1, 1));
+        double cosX = hypot(get(2, 0), get(2, 2));
+        double x = atan2(get(2, 1), cosX);
+        double sinZ = sin(z);
+        double cosZ = cos(z);
+        double sinY = sinZ * get(1, 2) + cosZ * get(0, 2);
+        double cosY = sinZ * get(1, 0) + cosZ * get(0, 0);
+        double y = atan2(sinY, cosY);
         return new Vec3d(x, y, z);
     }
     
