@@ -3,8 +3,7 @@ package es.razzleberri.util;
 import org.junit.Test;
 
 import java.text.DecimalFormat;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -12,7 +11,7 @@ public class RotationsTest {
     
     private final static DecimalFormat FORMAT = new DecimalFormat("####.####");
     
-    private final static double EPSILON = 1E-10;
+    private final static double EPSILON = /*1E-15*/Math.pow(2, -48);
     private final static double
         RAD_TO_DEG = Math.toDegrees(1),
         DEG_TO_RAD = Math.toRadians(1);
@@ -218,14 +217,12 @@ public class RotationsTest {
             assertTrue(euleredUsingZXY.equals(euleredUsingXYZ, EPSILON));
         }
         
-        DecimalFormat format = new DecimalFormat("####.####");
-        
         Vec3d anglesYXZ = new Vec3d(45, 45, 90).times(DEG_TO_RAD);
         Vec3d anglesXYLZ = Matrix3x3d.fromEulerYXZ(anglesYXZ).getXYLZEulerRotation();
         Vec3d anglesXYZ = new Vec3d(anglesXYLZ.getX(), anglesXYLZ.getY(), -anglesXYLZ.getZ());
-        System.out.println(anglesYXZ.times(RAD_TO_DEG).toString(format)
+        System.out.println(anglesYXZ.times(RAD_TO_DEG).toString(FORMAT)
             + " -> "
-            + anglesXYZ.times(RAD_TO_DEG).toString(format) + "\n"
+            + anglesXYZ.times(RAD_TO_DEG).toString(FORMAT) + "\n"
         );
         
         Vec3d p = new Vec3d(10, 0, 0);
@@ -233,11 +230,11 @@ public class RotationsTest {
         Matrix3x3d transformB = Matrix3x3d.fromEulerXYZ(anglesXYZ);
         assertTrue(transformA.equals(transformB, EPSILON));
         
-        System.out.println(transformA.toString(format));
-        System.out.println(transformB.toString(format));
+        System.out.println(transformA.toString(FORMAT));
+        System.out.println(transformB.toString(FORMAT));
         System.out.println();
-        System.out.println(transformA.times(p).toString(format));
-        System.out.println(transformB.times(p).toString(format));
+        System.out.println(transformA.times(p).toString(FORMAT));
+        System.out.println(transformB.times(p).toString(FORMAT));
         
     }
     
@@ -284,15 +281,13 @@ public class RotationsTest {
     
     @Test
     public void eulerYXZtoEulerLZYXManual() {
-        DecimalFormat format = new DecimalFormat("####.####");
-        
         Vec3d anglesYXZ = new Vec3d(35, 15, 75).times(DEG_TO_RAD);
         Vec3d anglesLZYX = Matrix3x3d.fromEulerYXZ(anglesYXZ).getLZYXEulerRotation();
         Vec3d anglesZYX = new Vec3d(anglesLZYX.getX(), anglesLZYX.getY(), -anglesLZYX.getZ());
         
-        System.out.println(anglesYXZ.times(RAD_TO_DEG).toString(format)
+        System.out.println(anglesYXZ.times(RAD_TO_DEG).toString(FORMAT)
             + " -> "
-            + anglesZYX.times(RAD_TO_DEG).toString(format) + "\n"
+            + anglesZYX.times(RAD_TO_DEG).toString(FORMAT) + "\n"
         );
         
         Matrix3x3d transformYXZ = Matrix3x3d.fromEulerYXZ(anglesYXZ);
@@ -301,12 +296,12 @@ public class RotationsTest {
         
         Matrix3x3d transformA = Matrix3x3d.fromEulerYXZ(anglesYXZ);
         Matrix3x3d transformB = Matrix3x3d.fromEulerZYX(anglesZYX);
-        System.out.println(transformA.toString(format));
-        System.out.println(transformB.toString(format));
+        System.out.println(transformA.toString(FORMAT));
+        System.out.println(transformB.toString(FORMAT));
         assertTrue(transformA.equals(transformB, EPSILON));
         
-        System.out.println(transformA.toString(format));
-        System.out.println(transformB.toString(format));
+        System.out.println(transformA.toString(FORMAT));
+        System.out.println(transformB.toString(FORMAT));
         
     }
     
